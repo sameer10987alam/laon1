@@ -1,0 +1,37 @@
+{
+  "applications": [
+    {
+      "id": 1001,
+      "userId": 1,
+      "loanType": "Personal Loan",
+      "amount": 500000,
+      "tenure": 33,
+      "monthlyIncome": 75000,
+      "employmentType": "Salaried",
+      "purpose": "Home renovation and furniture purchase",
+      "status": "Pending",
+      "appliedDate": "10/10/2025",
+      "estimatedEMI": 16607,
+      "interestRate": 12.0,
+      "remarks": "Application is under initial review by our loan processing team"
+      
+    },
+    {
+      "id": 1002,
+      "userId": 1,
+      "loanType": "Vehicle Loan",
+      "amount": 800000,
+      "tenure": 60,
+      "monthlyIncome": 75000,
+      "employmentType": "Salaried",
+      "purpose": "Purchase new car - Honda City",
+      "status": "Rejected",
+      "appliedDate": "05/10/2025",
+      "estimatedEMI": 17867,
+      "interestRate": 10.5,
+      "remarks": "Application rejected due to insufficient income documentation. Please provide latest 3 months salary slips and bank statements to proceed with reapplication.",
+      
+      "rejectionReason": "Insufficient income documentation"
+    }
+  ]
+}
