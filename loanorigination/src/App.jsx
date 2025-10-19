@@ -9,10 +9,10 @@ import Main from './UseCase1/Main';
 import UseCase4App from './UseCase4/UseCase4';
 
 // ===== Checker Dashboard (UseCase5) =====
-import Checker from './components/UserCase5/Checker';
+import Checker from './UserCase5/Checker';
 
 // ===== Customer Dashboard (UseCase2) =====
-import Customer from './UseCase3/App';
+
 
 // ===== Global Styles =====
 import './App.css';
@@ -31,7 +31,7 @@ function App() {
         <Route path="/checker-dashboard/*" element={<Checker />} />
 
         {/* ✅ FIXED: Added leading slash here */}
-        <Route path="/customer-dashboard/*" element={<Customer />} />
+        {/* <Route path="/customer-dashboard/*" element={<Customer />} /> */}
       </Routes>
     </Router>
   );
