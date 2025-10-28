@@ -1,0 +1,2102 @@
+package com.customer.demo.dto;
+
+import com.customer.demo.entities.enums.ApplicationStatus;
+import com.customer.demo.entities.enums.LoanType;
+import java.time.LocalDateTime;
+
+public class LoanApplicationDTO {
+
+    private Long id;
+    private Long customerId;
+    private LoanType loanType;
+    private ApplicationStatus status;
+    private String purpose;
+    private Double cibilScore;
+    private String makerComments;
+    private String checkerComments;
+    private LocalDateTime createdDate;
+    private LocalDateTime lastUpdatedDate;
+
+    // Getters & Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public Long getCustomerId() { return customerId; }
+    public void setCustomerId(Long customerId) { this.customerId = customerId; }
+
+    public LoanType getLoanType() { return loanType; }
+    public void setLoanType(LoanType loanType) { this.loanType = loanType; }
+
+    public ApplicationStatus getStatus() { return status; }
+    public void setStatus(ApplicationStatus status) { this.status = status; }
+
+    public String getPurpose() { return purpose; }
+    public void setPurpose(String purpose) { this.purpose = purpose; }
+
+    public Double getCibilScore() { return cibilScore; }
+    public void setCibilScore(Double cibilScore) { this.cibilScore = cibilScore; }
+
+    public String getMakerComments() { return makerComments; }
+    public void setMakerComments(String makerComments) { this.makerComments = makerComments; }
+
+    public String getCheckerComments() { return checkerComments; }
+    public void setCheckerComments(String checkerComments) { this.checkerComments = checkerComments; }
+
+    public LocalDateTime getCreatedDate() { return createdDate; }
+    public void setCreatedDate(LocalDateTime createdDate) { this.createdDate = createdDate; }
+
+    public LocalDateTime getLastUpdatedDate() { return lastUpdatedDate; }
+    public void setLastUpdatedDate(LocalDateTime lastUpdatedDate) { this.lastUpdatedDate = lastUpdatedDate; }
+}
+
+
+
+
+
+entitis
+
+package com.customer.demo.entities;
+
+import com.customer.demo.entities.enums.Gender;
+import com.customer.demo.entities.enums.MaritalStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.*;
+import java.time.LocalDate;
+import java.time.Period;
+
+@Entity
+@Table(name = "customers")
+public class Customer {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    // ===== Basic Information =====
+    private String firstName;
+    private String middleName;
+    private String lastName;
+    private String phone;
+    private String email;
+    private String currentAddress;
+    private String permanentAddress;
+
+    @Enumerated(EnumType.STRING)
+    private MaritalStatus maritalStatus;
+
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate dateOfBirth;
+
+    // ✅ Auto-calculated Age (not stored in DB)
+    @Transient
+    public int getAge() {
+        return dateOfBirth != null ? Period.between(dateOfBirth, LocalDate.now()).getYears() : 0;
+    }
+
+    // ===== Identification =====
+    private String aadhaarNumber;
+    private String panNumber;
+    private String passportNumber;
+    private String fatherName;
+    private String education;
+
+    // ===== PDF Documents =====
+    private String identityProofPath;
+    private String addressProofPath;
+
+    // ===== Relationships =====
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    // ✅ Back reference to LoanApplication (ONE-TO-ONE)
+    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
+    @JsonBackReference(value = "loan-application-customer")
+    private LoanApplication loanApplication;
+
+    // ===== Constructors =====
+    public Customer() {}
+
+    public Customer(String firstName, String lastName, String email, String phone) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.phone = phone;
+    }
+
+    // ===== Getters and Setters =====
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getFirstName() { return firstName; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+
+    public String getMiddleName() { return middleName; }
+    public void setMiddleName(String middleName) { this.middleName = middleName; }
+
+    public String getLastName() { return lastName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
+
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getCurrentAddress() { return currentAddress; }
+    public void setCurrentAddress(String currentAddress) { this.currentAddress = currentAddress; }
+
+    public String getPermanentAddress() { return permanentAddress; }
+    public void setPermanentAddress(String permanentAddress) { this.permanentAddress = permanentAddress; }
+
+    public MaritalStatus getMaritalStatus() { return maritalStatus; }
+    public void setMaritalStatus(MaritalStatus maritalStatus) { this.maritalStatus = maritalStatus; }
+
+    public Gender getGender() { return gender; }
+    public void setGender(Gender gender) { this.gender = gender; }
+
+    public LocalDate getDateOfBirth() { return dateOfBirth; }
+    public void setDateOfBirth(LocalDate dateOfBirth) { this.dateOfBirth = dateOfBirth; }
+
+    public String getAadhaarNumber() { return aadhaarNumber; }
+    public void setAadhaarNumber(String aadhaarNumber) { this.aadhaarNumber = aadhaarNumber; }
+
+    public String getPanNumber() { return panNumber; }
+    public void setPanNumber(String panNumber) { this.panNumber = panNumber; }
+
+    public String getPassportNumber() { return passportNumber; }
+    public void setPassportNumber(String passportNumber) { this.passportNumber = passportNumber; }
+
+    public String getFatherName() { return fatherName; }
+    public void setFatherName(String fatherName) { this.fatherName = fatherName; }
+
+    public String getEducation() { return education; }
+    public void setEducation(String education) { this.education = education; }
+
+    public String getIdentityProofPath() { return identityProofPath; }
+    public void setIdentityProofPath(String identityProofPath) { this.identityProofPath = identityProofPath; }
+
+    public String getAddressProofPath() { return addressProofPath; }
+    public void setAddressProofPath(String addressProofPath) { this.addressProofPath = addressProofPath; }
+
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
+
+    public LoanApplication getLoanApplication() { return loanApplication; }
+    public void setLoanApplication(LoanApplication loanApplication) { this.loanApplication = loanApplication; }
+}
+
+
+
+
+package com.customer.demo.entities;
+
+import com.customer.demo.entities.enums.OccupationType;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "employment_details")
+public class EmploymentDetails {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Enumerated(EnumType.STRING)
+    private OccupationType occupationType; // SALARIED or SELF_EMPLOYED
+
+    private String employerName;
+    private String designation;
+    private Integer totalWorkExperience;
+    private String officeAddress;
+    private Double monthlyIncome;
+
+    // 🔹 Business fields for SELF_EMPLOYED
+    private String businessName;
+    private String gstNumber;
+    private Double annualTurnover;
+
+    // 🔹 Store document file paths instead of byte[] in DB
+    private String salarySlipPath;
+    private String bankStatementPath;
+    private String itrDocumentPath;
+    private String offerLetterPath;
+    private String registrationCertificatePath;
+    private String businessLicensePath;
+
+    // 🔹 Relationship with LoanApplication
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "loan_application_id")
+    @JsonBackReference(value = "loan-application-employment")
+    private LoanApplication loanApplication;
+
+    // ===== Constructors =====
+    public EmploymentDetails() {}
+
+    public EmploymentDetails(OccupationType occupationType, String employerName, Double monthlyIncome) {
+        this.occupationType = occupationType;
+        this.employerName = employerName;
+        this.monthlyIncome = monthlyIncome;
+    }
+
+    // ===== Getters and Setters =====
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public OccupationType getOccupationType() {
+        return occupationType;
+    }
+
+    public void setOccupationType(OccupationType occupationType) {
+        this.occupationType = occupationType;
+    }
+
+    public String getEmployerName() {
+        return employerName;
+    }
+
+    public void setEmployerName(String employerName) {
+        this.employerName = employerName;
+    }
+
+    public String getDesignation() {
+        return designation;
+    }
+
+    public void setDesignation(String designation) {
+        this.designation = designation;
+    }
+
+    public Integer getTotalWorkExperience() {
+        return totalWorkExperience;
+    }
+
+    public void setTotalWorkExperience(Integer totalWorkExperience) {
+        this.totalWorkExperience = totalWorkExperience;
+    }
+
+    public String getOfficeAddress() {
+        return officeAddress;
+    }
+
+    public void setOfficeAddress(String officeAddress) {
+        this.officeAddress = officeAddress;
+    }
+
+    public Double getMonthlyIncome() {
+        return monthlyIncome;
+    }
+
+    public void setMonthlyIncome(Double monthlyIncome) {
+        this.monthlyIncome = monthlyIncome;
+    }
+
+    public String getBusinessName() {
+        return businessName;
+    }
+
+    public void setBusinessName(String businessName) {
+        this.businessName = businessName;
+    }
+
+    public String getGstNumber() {
+        return gstNumber;
+    }
+
+    public void setGstNumber(String gstNumber) {
+        this.gstNumber = gstNumber;
+    }
+
+    public Double getAnnualTurnover() {
+        return annualTurnover;
+    }
+
+    public void setAnnualTurnover(Double annualTurnover) {
+        this.annualTurnover = annualTurnover;
+    }
+
+    // ===== File Path Getters & Setters =====
+    public String getSalarySlipPath() {
+        return salarySlipPath;
+    }
+
+    public void setSalarySlipPath(String salarySlipPath) {
+        this.salarySlipPath = salarySlipPath;
+    }
+
+    public String getBankStatementPath() {
+        return bankStatementPath;
+    }
+
+    public void setBankStatementPath(String bankStatementPath) {
+        this.bankStatementPath = bankStatementPath;
+    }
+
+    public String getItrDocumentPath() {
+        return itrDocumentPath;
+    }
+
+    public void setItrDocumentPath(String itrDocumentPath) {
+        this.itrDocumentPath = itrDocumentPath;
+    }
+
+    public String getOfferLetterPath() {
+        return offerLetterPath;
+    }
+
+    public void setOfferLetterPath(String offerLetterPath) {
+        this.offerLetterPath = offerLetterPath;
+    }
+
+    public String getRegistrationCertificatePath() {
+        return registrationCertificatePath;
+    }
+
+    public void setRegistrationCertificatePath(String registrationCertificatePath) {
+        this.registrationCertificatePath = registrationCertificatePath;
+    }
+
+    public String getBusinessLicensePath() {
+        return businessLicensePath;
+    }
+
+    public void setBusinessLicensePath(String businessLicensePath) {
+        this.businessLicensePath = businessLicensePath;
+    }
+
+    public LoanApplication getLoanApplication() {
+        return loanApplication;
+    }
+
+    public void setLoanApplication(LoanApplication loanApplication) {
+        this.loanApplication = loanApplication;
+    }
+}
+
+
+package com.customer.demo.entities;
+
+import com.customer.demo.entities.enums.ApplicationStatus;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = "loan_applications")
+public class LoanApplication {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(unique = true, nullable = false, updatable = false)
+    private String applicationNumber;
+
+    @Enumerated(EnumType.STRING)
+    private ApplicationStatus status = ApplicationStatus.PENDING_VERIFICATION;
+
+    private String makerComments;
+    private String checkerComments;
+    private Integer cibilScore;
+
+    private LocalDateTime createdDate;
+    private LocalDateTime lastUpdatedDate;
+
+    private Long makerId;
+    private Long checkerId;
+
+    // ✅ LoanApplication owns the Customer
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "customer_id", referencedColumnName = "id")
+    @JsonManagedReference(value = "loan-application-customer")
+    private Customer customer;
+
+    @OneToOne(mappedBy = "loanApplication", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "loan-application-details")
+    private LoanDetails loanDetails;
+
+    @OneToOne(mappedBy = "loanApplication", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "loan-application-employment")
+    private EmploymentDetails employmentDetails;
+
+    @OneToMany(mappedBy = "loanApplication", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference(value = "loan-application-references")
+    private List<Reference> references = new ArrayList<>();
+
+
+    // ===== Relationship Setters =====
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+        if (customer != null) {
+            customer.setLoanApplication(this); // 👈 Set the reverse link
+        }
+    }
+
+    public void setLoanDetails(LoanDetails loanDetails) {
+        this.loanDetails = loanDetails;
+        if (loanDetails != null) {
+            loanDetails.setLoanApplication(this);
+        }
+    }
+
+    public void setEmploymentDetails(EmploymentDetails employmentDetails) {
+        this.employmentDetails = employmentDetails;
+        if (employmentDetails != null) {
+            employmentDetails.setLoanApplication(this);
+        }
+    }
+
+    public void setReferences(List<Reference> references) {
+        this.references.clear();
+        if (references != null) {
+            for (Reference ref : references) {
+                ref.setLoanApplication(this);
+                this.references.add(ref);
+            }
+        }
+    }
+
+    @PrePersist
+    public void onCreate() {
+        this.createdDate = LocalDateTime.now();
+        this.lastUpdatedDate = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        this.lastUpdatedDate = LocalDateTime.now();
+    }
+
+    // ===== Getters & Setters =====
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getApplicationNumber() { return applicationNumber; }
+    public void setApplicationNumber(String applicationNumber) { this.applicationNumber = applicationNumber; }
+
+    public ApplicationStatus getStatus() { return status; }
+    public void setStatus(ApplicationStatus status) { this.status = status; }
+
+    public String getMakerComments() { return makerComments; }
+    public void setMakerComments(String makerComments) { this.makerComments = makerComments; }
+
+    public String getCheckerComments() { return checkerComments; }
+    public void setCheckerComments(String checkerComments) { this.checkerComments = checkerComments; }
+
+    public Integer getCibilScore() { return cibilScore; }
+    public void setCibilScore(Integer cibilScore) { this.cibilScore = cibilScore; }
+
+    public LocalDateTime getCreatedDate() { return createdDate; }
+    public void setCreatedDate(LocalDateTime createdDate) { this.createdDate = createdDate; }
+
+    public LocalDateTime getLastUpdatedDate() { return lastUpdatedDate; }
+    public void setLastUpdatedDate(LocalDateTime lastUpdatedDate) { this.lastUpdatedDate = lastUpdatedDate; }
+
+    public Long getMakerId() { return makerId; }
+    public void setMakerId(Long makerId) { this.makerId = makerId; }
+
+    public Long getCheckerId() { return checkerId; }
+    public void setCheckerId(Long checkerId) { this.checkerId = checkerId; }
+
+    public Customer getCustomer() { return customer; }
+    public LoanDetails getLoanDetails() { return loanDetails; }
+    public EmploymentDetails getEmploymentDetails() { return employmentDetails; }
+    public List<Reference> getReferences() { return references; }
+}
+
+package com.customer.demo.entities;
+
+import com.customer.demo.entities.enums.LoanType;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "loan_details")
+public class LoanDetails {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Enumerated(EnumType.STRING)
+    private LoanType loanType;
+
+    private Double loanAmount;
+    private Integer loanDuration;
+    private String purposeOfLoan;
+
+    // 🔹 File paths for uploaded PDFs (no longer stored as BLOBs)
+    private String saleAgreementPath;
+    private String landProofPath;
+    private String invoiceFromDealerPath;
+    private String quotationPath;
+    private String existingLoanProofPath;
+
+    // 🔹 Existing loan information
+    private Boolean hasExistingLoans = false;
+    private String existingLoanType;
+    private String existingLender;
+    private Double outstandingAmount;
+    private Integer tenureRemaining;
+
+    // 🔹 Relationship with LoanApplication
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "loan_application_id")
+    @JsonBackReference(value = "loan-application-details")
+    private LoanApplication loanApplication;
+
+    // ===== Constructors =====
+    public LoanDetails() {}
+
+    public LoanDetails(LoanType loanType, Double loanAmount, Integer loanDuration, String purposeOfLoan) {
+        this.loanType = loanType;
+        this.loanAmount = loanAmount;
+        this.loanDuration = loanDuration;
+        this.purposeOfLoan = purposeOfLoan;
+    }
+
+    // ===== Getters and Setters =====
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public LoanType getLoanType() {
+        return loanType;
+    }
+
+    public void setLoanType(LoanType loanType) {
+        this.loanType = loanType;
+    }
+
+    public Double getLoanAmount() {
+        return loanAmount;
+    }
+
+    public void setLoanAmount(Double loanAmount) {
+        this.loanAmount = loanAmount;
+    }
+
+    public Integer getLoanDuration() {
+        return loanDuration;
+    }
+
+    public void setLoanDuration(Integer loanDuration) {
+        this.loanDuration = loanDuration;
+    }
+
+    public String getPurposeOfLoan() {
+        return purposeOfLoan;
+    }
+
+    public void setPurposeOfLoan(String purposeOfLoan) {
+        this.purposeOfLoan = purposeOfLoan;
+    }
+
+    // ===== File Path Fields =====
+    public String getSaleAgreementPath() {
+        return saleAgreementPath;
+    }
+
+    public void setSaleAgreementPath(String saleAgreementPath) {
+        this.saleAgreementPath = saleAgreementPath;
+    }
+
+    public String getLandProofPath() {
+        return landProofPath;
+    }
+
+    public void setLandProofPath(String landProofPath) {
+        this.landProofPath = landProofPath;
+    }
+
+    public String getInvoiceFromDealerPath() {
+        return invoiceFromDealerPath;
+    }
+
+    public void setInvoiceFromDealerPath(String invoiceFromDealerPath) {
+        this.invoiceFromDealerPath = invoiceFromDealerPath;
+    }
+
+    public String getQuotationPath() {
+        return quotationPath;
+    }
+
+    public void setQuotationPath(String quotationPath) {
+        this.quotationPath = quotationPath;
+    }
+
+    public String getExistingLoanProofPath() {
+        return existingLoanProofPath;
+    }
+
+    public void setExistingLoanProofPath(String existingLoanProofPath) {
+        this.existingLoanProofPath = existingLoanProofPath;
+    }
+
+    // ===== Existing Loan Info =====
+    public Boolean getHasExistingLoans() {
+        return hasExistingLoans;
+    }
+
+    public void setHasExistingLoans(Boolean hasExistingLoans) {
+        this.hasExistingLoans = hasExistingLoans;
+    }
+
+    public String getExistingLoanType() {
+        return existingLoanType;
+    }
+
+    public void setExistingLoanType(String existingLoanType) {
+        this.existingLoanType = existingLoanType;
+    }
+
+    public String getExistingLender() {
+        return existingLender;
+    }
+
+    public void setExistingLender(String existingLender) {
+        this.existingLender = existingLender;
+    }
+
+    public Double getOutstandingAmount() {
+        return outstandingAmount;
+    }
+
+    public void setOutstandingAmount(Double outstandingAmount) {
+        this.outstandingAmount = outstandingAmount;
+    }
+
+    public Integer getTenureRemaining() {
+        return tenureRemaining;
+    }
+
+    public void setTenureRemaining(Integer tenureRemaining) {
+        this.tenureRemaining = tenureRemaining;
+    }
+
+    // ===== Relationship =====
+    public LoanApplication getLoanApplication() {
+        return loanApplication;
+    }
+
+    public void setLoanApplication(LoanApplication loanApplication) {
+        this.loanApplication = loanApplication;
+    }
+}
+
+
+
+package com.customer.demo.entities;
+
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "notifications")
+public class Notification {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    // Recipient role (CUSTOMER, MAKER, CHECKER)
+    @Column(nullable = false)
+    private String recipientRole;
+
+    // The message to display in frontend (dashboard, email, etc.)
+    @Column(nullable = false, length = 500)
+    private String message;
+
+    private boolean readStatus = false;
+
+    private LocalDateTime timestamp = LocalDateTime.now();
+
+    // Optional: linked loan application
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "loan_application_id")
+    private LoanApplication loanApplication;
+
+    // ===== Getters and Setters =====
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getRecipientRole() { return recipientRole; }
+    public void setRecipientRole(String recipientRole) { this.recipientRole = recipientRole; }
+
+    public String getMessage() { return message; }
+    public void setMessage(String message) { this.message = message; }
+
+    public boolean isReadStatus() { return readStatus; }
+    public void setReadStatus(boolean readStatus) { this.readStatus = readStatus; }
+
+    public LocalDateTime getTimestamp() { return timestamp; }
+    public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
+
+    public LoanApplication getLoanApplication() { return loanApplication; }
+    public void setLoanApplication(LoanApplication loanApplication) { this.loanApplication = loanApplication; }
+}
+
+
+
+package com.customer.demo.entities;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "loan_references")
+public class Reference {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private String name;
+
+    private String relationship;
+    private String contactNumber;
+    private String address;
+
+    // ✅ Many references belong to one LoanApplication
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "loan_application_id")
+    @JsonBackReference(value = "loan-application-references")
+    private LoanApplication loanApplication;
+
+
+    // ===== Constructors =====
+    public Reference() {}
+
+    public Reference(String name, String relationship, String contactNumber, String address) {
+        this.name = name;
+        this.relationship = relationship;
+        this.contactNumber = contactNumber;
+        this.address = address;
+    }
+
+    // ===== Getters and Setters =====
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getRelationship() {
+        return relationship;
+    }
+
+    public void setRelationship(String relationship) {
+        this.relationship = relationship;
+    }
+
+    public String getContactNumber() {
+        return contactNumber;
+    }
+
+    public void setContactNumber(String contactNumber) {
+        this.contactNumber = contactNumber;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public LoanApplication getLoanApplication() {
+        return loanApplication;
+    }
+
+    public void setLoanApplication(LoanApplication loanApplication) {
+        this.loanApplication = loanApplication;
+    }
+}
+
+
+
+package com.customer.demo.entities;
+
+import com.customer.demo.entities.enums.Role;
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "users")
+public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(unique = true, nullable = false)
+    private String username; // email for customers
+
+    @Column(nullable = false)
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    private Role role; // CUSTOMER, MAKER, CHECKER
+
+    private boolean active = true;
+
+    private String resetToken; // for forgot password
+
+    // Relationship: each user has 1 customer profile (if role = CUSTOMER)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Customer customer;
+
+    // Getters & Setters
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public String getResetToken() {
+        return resetToken;
+    }
+
+    public void setResetToken(String resetToken) {
+        this.resetToken = resetToken;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+}
+
+
+
+
+exception
+
+
+
+package com.customer.demo.exceptions;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
+@ControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleResourceNotFound(ResourceNotFoundException ex) {
+        return errorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidFileException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidFile(InvalidFileException ex) {
+        return errorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(UnauthorizedAccessException.class)
+    public ResponseEntity<Map<String, Object>> handleUnauthorized(UnauthorizedAccessException ex) {
+        return errorResponse(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> handleGeneric(Exception ex) {
+        return errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+    }
+
+    private ResponseEntity<Map<String, Object>> errorResponse(HttpStatus status, String message) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", status.value());
+        body.put("error", message);
+        return new ResponseEntity<>(body, status);
+    }
+}
+
+
+package com.customer.demo.exceptions;
+
+public class InvalidFileException extends RuntimeException {
+    public InvalidFileException(String message) {
+        super(message);
+    }
+}
+
+
+
+package com.customer.demo.exceptions;
+
+public class ResourceNotFoundException extends RuntimeException {
+
+    public ResourceNotFoundException(String message) {
+        super(message);
+    }
+}
+
+
+package com.customer.demo.exceptions;
+
+public class UnauthorizedAccessException extends RuntimeException {
+    public UnauthorizedAccessException(String message) {
+        super(message);
+    }
+}
+
+
+
+repositories
+package com.customer.demo.repositories;
+
+import com.customer.demo.entities.Customer;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface CustomerRepository extends JpaRepository<Customer, Long> {
+}
+
+
+
+package com.customer.demo.repositories;
+
+import com.customer.demo.entities.EmploymentDetails;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface EmploymentRepository extends JpaRepository<EmploymentDetails, Long> {
+
+    EmploymentDetails findByLoanApplicationId(Long loanApplicationId);
+}
+
+
+
+package com.customer.demo.repositories;
+
+import com.customer.demo.entities.LoanApplication;
+import com.customer.demo.entities.enums.ApplicationStatus;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface LoanApplicationRepository extends JpaRepository<LoanApplication, Long> {
+    List<LoanApplication> findByCustomerId(Long customerId);
+    List<LoanApplication> findByStatus(ApplicationStatus status);
+    List<LoanApplication> findByCustomerIdAndStatus(Long customerId, ApplicationStatus status);
+}
+
+
+
+package com.customer.demo.repositories;
+
+import com.customer.demo.entities.LoanDetails;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface LoanDetailsRepository extends JpaRepository<LoanDetails, Long> {
+
+    LoanDetails findByLoanApplicationId(Long loanApplicationId);
+}
+
+
+package com.customer.demo.repositories;
+
+import com.customer.demo.entities.Notification;
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+
+public interface NotificationRepository extends JpaRepository<Notification, Long> {
+    List<Notification> findByRecipientRoleOrderByTimestampDesc(String role);
+}
+
+
+
+package com.customer.demo.repositories;
+
+import com.customer.demo.entities.Reference;
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+
+public interface ReferenceRepository extends JpaRepository<Reference, Long> {
+    List<Reference> findByLoanApplicationId(Long loanApplicationId);
+}
+
+
+package com.customer.demo.repositories;
+
+import com.customer.demo.entities.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Optional;
+
+public interface UserRepository extends JpaRepository<User, Long> {
+
+    // ✅ For login
+    Optional<User> findByUsername(String username);
+
+    // ✅ For forgot password
+    Optional<User> findByResetToken(String resetToken);
+}
+
+
+
+
+service
+
+
+
+
+package com.customer.demo.services;
+
+public interface CibilService {
+    int generateMockCibil(Long customerId);
+}
+
+
+
+package com.customer.demo.services;
+
+import org.springframework.stereotype.Service;
+import java.util.Random;
+
+@Service
+public class CibilServiceImpl implements CibilService {
+
+    @Override
+    public int generateMockCibil(Long customerId) {
+        // Generate realistic mock score between 650 - 850
+        return 650 + new Random().nextInt(200);
+    }
+}
+
+
+package com.customer.demo.services;
+
+import com.customer.demo.entities.Customer;
+import com.customer.demo.entities.enums.DocumentType;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
+
+public interface CustomerService {
+
+    /**
+     * Save a new or updated customer with uploaded documents.
+     * The files are stored in /uploads/customers/{customerId}/ and only the file paths are saved in DB.
+     */
+    Customer saveCustomer(Customer customer,
+                          MultipartFile identityProof,
+                          MultipartFile addressProof) throws IOException;
+
+    /**
+     * Retrieve all customers (used in Maker dashboard)
+     */
+    List<Customer> getAllCustomers();
+
+    /**
+     * Retrieve a single customer by ID
+     */
+    Customer getCustomerById(Long id);
+
+    /**
+     * Returns the stored document path (used to view/download file from backend)
+     * @param id Customer ID
+     * @param type Document type (ID_PROOF or ADDRESS_PROOF)
+     */
+    String getDocumentPath(Long id, DocumentType type);
+}
+
+
+
+
+package com.customer.demo.services;
+
+import com.customer.demo.entities.Customer;
+import com.customer.demo.entities.enums.DocumentType;
+import com.customer.demo.repositories.CustomerRepository;
+import com.customer.demo.utils.FileStorageUtil;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
+
+@Service
+public class CustomerServiceImpl implements CustomerService {
+
+    private final CustomerRepository customerRepository;
+
+    public CustomerServiceImpl(CustomerRepository customerRepository) {
+        this.customerRepository = customerRepository;
+    }
+
+    @Override
+    public Customer saveCustomer(Customer customer,
+                                 MultipartFile identityProof,
+                                 MultipartFile addressProof) throws IOException {
+
+        // ✅ Step 1: Save customer first to generate ID for directory naming
+        Customer savedCustomer = customerRepository.saveAndFlush(customer);
+        String uploadDir = "uploads/customers/" + savedCustomer.getId();
+
+        // ✅ Step 2: Save Identity Proof
+        if (identityProof != null && !identityProof.isEmpty()) {
+            System.out.println("📄 Uploading Identity Proof for Customer ID: " + savedCustomer.getId());
+            String filePath = FileStorageUtil.saveFile(identityProof, uploadDir, "identityProof.pdf");
+            savedCustomer.setIdentityProofPath(filePath);
+            System.out.println("✅ Identity Proof saved at: " + filePath);
+        } else {
+            System.out.println("⚠️ No Identity Proof uploaded for Customer ID: " + savedCustomer.getId());
+        }
+
+        // ✅ Step 3: Save Address Proof
+        if (addressProof != null && !addressProof.isEmpty()) {
+            System.out.println("📄 Uploading Address Proof for Customer ID: " + savedCustomer.getId());
+            String filePath = FileStorageUtil.saveFile(addressProof, uploadDir, "addressProof.pdf");
+            savedCustomer.setAddressProofPath(filePath);
+            System.out.println("✅ Address Proof saved at: " + filePath);
+        } else {
+            System.out.println("⚠️ No Address Proof uploaded for Customer ID: " + savedCustomer.getId());
+        }
+
+        // ✅ Step 4: Save updated paths to DB
+        Customer finalSavedCustomer = customerRepository.save(savedCustomer);
+        System.out.println("💾 Customer saved successfully with ID: " + finalSavedCustomer.getId());
+
+        return finalSavedCustomer;
+    }
+
+    // ✅ Fetch all customers (for dashboard or admin)
+    @Override
+    public List<Customer> getAllCustomers() {
+        return customerRepository.findAll();
+    }
+
+    // ✅ Fetch single customer details by ID
+    @Override
+    public Customer getCustomerById(Long id) {
+        return customerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("❌ Customer not found with ID: " + id));
+    }
+
+    // ✅ Retrieve stored document path (used for download or preview)
+    @Override
+    public String getDocumentPath(Long id, DocumentType type) {
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("❌ Customer not found with ID: " + id));
+
+        String path;
+        switch (type) {
+            case ID_PROOF -> path = customer.getIdentityProofPath();
+            case ADDRESS_PROOF -> path = customer.getAddressProofPath();
+            default -> throw new RuntimeException("❌ Invalid or unsupported document type: " + type);
+        }
+
+        if (path == null || path.isEmpty()) {
+            throw new RuntimeException("⚠️ Document path not found for type: " + type + " (Customer ID: " + id + ")");
+        }
+
+        System.out.println("📂 Returning document path for Customer ID: " + id + " => " + path);
+        return path;
+    }
+}
+
+
+
+package com.customer.demo.services;
+
+import com.customer.demo.entities.EmploymentDetails;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
+
+public interface EmploymentService {
+    EmploymentDetails saveEmploymentDetails(EmploymentDetails details,
+                                            MultipartFile salarySlip,
+                                            MultipartFile bankStatement,
+                                            MultipartFile itrDocument,
+                                            MultipartFile offerLetter,
+                                            MultipartFile registrationCertificate,
+                                            MultipartFile businessLicense) throws IOException;
+
+    List<EmploymentDetails> getAllEmploymentDetails();
+
+    EmploymentDetails getEmploymentDetailsById(Long id);
+
+    String getDocumentPath(Long id, String type);
+}
+
+
+
+
+package com.customer.demo.services;
+
+import com.customer.demo.entities.EmploymentDetails;
+import com.customer.demo.repositories.EmploymentRepository;
+import com.customer.demo.utils.FileStorageUtil;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
+@Service
+public class EmploymentServiceImpl implements EmploymentService {
+
+    private final EmploymentRepository repo;
+
+    public EmploymentServiceImpl(EmploymentRepository repo) {
+        this.repo = repo;
+    }
+
+    @Override
+    public EmploymentDetails saveEmploymentDetails(EmploymentDetails details,
+                                                   MultipartFile salarySlip,
+                                                   MultipartFile bankStatement,
+                                                   MultipartFile itrDocument,
+                                                   MultipartFile offerLetter,
+                                                   MultipartFile registrationCertificate,
+                                                   MultipartFile businessLicense) throws IOException {
+
+        // ✅ Define upload directory for employment documents
+        String uploadDir = "uploads/employment/" + (details.getId() != null ? details.getId() : "temp");
+        new File(uploadDir).mkdirs();
+
+        // ✅ Save each document to disk and store its path in DB
+        if (salarySlip != null && !salarySlip.isEmpty()) {
+            String path = FileStorageUtil.saveFile(salarySlip, uploadDir, "salarySlip.pdf");
+            details.setSalarySlipPath(path);
+        }
+
+        if (bankStatement != null && !bankStatement.isEmpty()) {
+            String path = FileStorageUtil.saveFile(bankStatement, uploadDir, "bankStatement.pdf");
+            details.setBankStatementPath(path);
+        }
+
+        if (itrDocument != null && !itrDocument.isEmpty()) {
+            String path = FileStorageUtil.saveFile(itrDocument, uploadDir, "itrDocument.pdf");
+            details.setItrDocumentPath(path);
+        }
+
+        if (offerLetter != null && !offerLetter.isEmpty()) {
+            String path = FileStorageUtil.saveFile(offerLetter, uploadDir, "offerLetter.pdf");
+            details.setOfferLetterPath(path);
+        }
+
+        if (registrationCertificate != null && !registrationCertificate.isEmpty()) {
+            String path = FileStorageUtil.saveFile(registrationCertificate, uploadDir, "registrationCertificate.pdf");
+            details.setRegistrationCertificatePath(path);
+        }
+
+        if (businessLicense != null && !businessLicense.isEmpty()) {
+            String path = FileStorageUtil.saveFile(businessLicense, uploadDir, "businessLicense.pdf");
+            details.setBusinessLicensePath(path);
+        }
+
+        // ✅ Save entity with file paths
+        return repo.save(details);
+    }
+
+    @Override
+    public List<EmploymentDetails> getAllEmploymentDetails() {
+        return repo.findAll();
+    }
+
+    @Override
+    public EmploymentDetails getEmploymentDetailsById(Long id) {
+        return repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employment details not found with ID: " + id));
+    }
+
+    // ✅ Get the document path instead of binary data
+    @Override
+    public String getDocumentPath(Long id, String type) {
+        EmploymentDetails e = getEmploymentDetailsById(id);
+
+        return switch (type.toLowerCase()) {
+            case "salary_slip" -> e.getSalarySlipPath();
+            case "bank_statement" -> e.getBankStatementPath();
+            case "itr" -> e.getItrDocumentPath();
+            case "offer_letter" -> e.getOfferLetterPath();
+            case "registration_certificate" -> e.getRegistrationCertificatePath();
+            case "business_license" -> e.getBusinessLicensePath();
+            default -> throw new RuntimeException("Invalid document type");
+        };
+    }
+}
+
+package com.customer.demo.services;
+
+import com.customer.demo.entities.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+
+public interface LoanApplicationService {
+
+    LoanApplication createFullApplication(
+            Customer customer,
+            EmploymentDetails employment,
+            LoanDetails loanDetails,
+            List<Reference> references,
+            MultipartFile identityProof,
+            MultipartFile addressProof,
+            MultipartFile salarySlip,
+            MultipartFile bankStatement,
+            MultipartFile itrDocument,
+            MultipartFile offerLetter,
+            MultipartFile registrationCertificate,
+            MultipartFile businessLicense,
+            MultipartFile saleAgreement,
+            MultipartFile landProof,
+            MultipartFile invoiceFromDealer,
+            MultipartFile quotation,
+            MultipartFile existingLoanProof
+    );
+
+    List<LoanApplication> getAllApplications();
+
+    LoanApplication getApplicationById(Long id);
+}
+
+
+
+package com.customer.demo.services;
+
+import com.customer.demo.entities.*;
+import com.customer.demo.entities.enums.ApplicationStatus;
+import com.customer.demo.repositories.*;
+import com.customer.demo.utils.CibilScoreGenerator;
+import com.customer.demo.utils.FileStorageUtil;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Service
+public class LoanApplicationServiceImpl implements LoanApplicationService {
+
+    private final CustomerRepository customerRepository;
+    private final LoanApplicationRepository loanApplicationRepository;
+    private final CibilScoreGenerator cibilScoreGenerator; // ✅ Keep only CIBIL bean
+
+    // ✅ Remove FileStorageUtil from constructor (it’s static)
+    public LoanApplicationServiceImpl(CustomerRepository customerRepository,
+                                      LoanApplicationRepository loanApplicationRepository,
+                                      CibilScoreGenerator cibilScoreGenerator) {
+        this.customerRepository = customerRepository;
+        this.loanApplicationRepository = loanApplicationRepository;
+        this.cibilScoreGenerator = cibilScoreGenerator;
+    }
+
+    @Override
+    public LoanApplication createFullApplication(
+            Customer customer,
+            EmploymentDetails employment,
+            LoanDetails loanDetails,
+            List<Reference> references,
+            MultipartFile identityProof,
+            MultipartFile addressProof,
+            MultipartFile salarySlip,
+            MultipartFile bankStatement,
+            MultipartFile itrDocument,
+            MultipartFile offerLetter,
+            MultipartFile registrationCertificate,
+            MultipartFile businessLicense,
+            MultipartFile saleAgreement,
+            MultipartFile landProof,
+            MultipartFile invoiceFromDealer,
+            MultipartFile quotation,
+            MultipartFile existingLoanProof
+    ) {
+        try {
+            // ✅ Step 1: Save customer first to generate ID
+            Customer savedCustomer = customerRepository.saveAndFlush(customer);
+
+            // ✅ Step 2: Save Customer Documents
+            String customerDir = "customers/" + savedCustomer.getId();
+
+            if (identityProof != null && !identityProof.isEmpty()) {
+                savedCustomer.setIdentityProofPath(FileStorageUtil.saveFile(identityProof, customerDir, "identityProof.pdf"));
+            }
+            if (addressProof != null && !addressProof.isEmpty()) {
+                savedCustomer.setAddressProofPath(FileStorageUtil.saveFile(addressProof, customerDir, "addressProof.pdf"));
+            }
+
+            customerRepository.save(savedCustomer);
+
+            // ✅ Step 3: Handle Employment Documents
+            String employmentDir = "employment/" + savedCustomer.getId();
+
+            if (salarySlip != null && !salarySlip.isEmpty()) {
+                employment.setSalarySlipPath(FileStorageUtil.saveFile(salarySlip, employmentDir, "salarySlip.pdf"));
+            }
+            if (bankStatement != null && !bankStatement.isEmpty()) {
+                employment.setBankStatementPath(FileStorageUtil.saveFile(bankStatement, employmentDir, "bankStatement.pdf"));
+            }
+            if (itrDocument != null && !itrDocument.isEmpty()) {
+                employment.setItrDocumentPath(FileStorageUtil.saveFile(itrDocument, employmentDir, "itrDocument.pdf"));
+            }
+            if (offerLetter != null && !offerLetter.isEmpty()) {
+                employment.setOfferLetterPath(FileStorageUtil.saveFile(offerLetter, employmentDir, "offerLetter.pdf"));
+            }
+            if (registrationCertificate != null && !registrationCertificate.isEmpty()) {
+                employment.setRegistrationCertificatePath(FileStorageUtil.saveFile(registrationCertificate, employmentDir, "registrationCertificate.pdf"));
+            }
+            if (businessLicense != null && !businessLicense.isEmpty()) {
+                employment.setBusinessLicensePath(FileStorageUtil.saveFile(businessLicense, employmentDir, "businessLicense.pdf"));
+            }
+
+            // ✅ Step 4: Handle Loan Details Documents
+            String loanDir = "loanDetails/" + savedCustomer.getId();
+
+            if (saleAgreement != null && !saleAgreement.isEmpty()) {
+                loanDetails.setSaleAgreementPath(FileStorageUtil.saveFile(saleAgreement, loanDir, "saleAgreement.pdf"));
+            }
+            if (landProof != null && !landProof.isEmpty()) {
+                loanDetails.setLandProofPath(FileStorageUtil.saveFile(landProof, loanDir, "landProof.pdf"));
+            }
+            if (invoiceFromDealer != null && !invoiceFromDealer.isEmpty()) {
+                loanDetails.setInvoiceFromDealerPath(FileStorageUtil.saveFile(invoiceFromDealer, loanDir, "invoiceFromDealer.pdf"));
+            }
+            if (quotation != null && !quotation.isEmpty()) {
+                loanDetails.setQuotationPath(FileStorageUtil.saveFile(quotation, loanDir, "quotation.pdf"));
+            }
+            if (existingLoanProof != null && !existingLoanProof.isEmpty()) {
+                loanDetails.setExistingLoanProofPath(FileStorageUtil.saveFile(existingLoanProof, loanDir, "existingLoanProof.pdf"));
+            }
+
+            // ✅ Step 5: Build Loan Application
+            LoanApplication application = new LoanApplication();
+            application.setCustomer(savedCustomer);
+            application.setEmploymentDetails(employment);
+            application.setLoanDetails(loanDetails);
+            application.setReferences(references);
+            application.setStatus(ApplicationStatus.PENDING_VERIFICATION);
+
+            // ✅ Auto-generate realistic CIBIL score
+            application.setCibilScore(cibilScoreGenerator.generateScore());
+
+            application.setCreatedDate(LocalDateTime.now());
+            application.setLastUpdatedDate(LocalDateTime.now());
+            application.setApplicationNumber(generateApplicationNumber());
+
+            // Reverse relationships
+            employment.setLoanApplication(application);
+            loanDetails.setLoanApplication(application);
+            references.forEach(ref -> ref.setLoanApplication(application));
+
+            // ✅ Step 6: Save full application
+            LoanApplication savedApplication = loanApplicationRepository.save(application);
+
+            System.out.println("✅ Loan application saved successfully with Application No: "
+                    + savedApplication.getApplicationNumber());
+
+            return savedApplication;
+
+        } catch (IOException e) {
+            throw new RuntimeException("❌ File upload error: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new RuntimeException("❌ Error saving loan application: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public List<LoanApplication> getAllApplications() {
+        return loanApplicationRepository.findAll();
+    }
+
+    @Override
+    public LoanApplication getApplicationById(Long id) {
+        return loanApplicationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("❌ Loan Application not found with ID: " + id));
+    }
+
+    // ✅ Generate application numbers like APP-2025-00001
+    private String generateApplicationNumber() {
+        long count = loanApplicationRepository.count() + 1;
+        return String.format("APP-%d-%05d", LocalDateTime.now().getYear(), count);
+    }
+}
+
+
+
+package com.customer.demo.services;
+
+import com.customer.demo.entities.LoanDetails;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+
+public interface LoanDetailsService {
+
+    LoanDetails saveLoanDetails(LoanDetails details,
+                                MultipartFile saleAgreement,
+                                MultipartFile landProof,
+                                MultipartFile invoiceFromDealer,
+                                MultipartFile quotation,
+                                MultipartFile existingLoanProof) throws IOException;
+
+    // ✅ Updated method signature (path-based)
+    String getDocumentPath(Long id, String type);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+package com.customer.demo.services;
+
+import com.customer.demo.entities.LoanDetails;
+import com.customer.demo.repositories.LoanDetailsRepository;
+import com.customer.demo.utils.FileStorageUtil;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+
+@Service
+public class LoanDetailsServiceImpl implements LoanDetailsService {
+
+    private final LoanDetailsRepository repo;
+
+    public LoanDetailsServiceImpl(LoanDetailsRepository repo) {
+        this.repo = repo;
+    }
+
+    @Override
+    public LoanDetails saveLoanDetails(LoanDetails details,
+                                       MultipartFile saleAgreement,
+                                       MultipartFile landProof,
+                                       MultipartFile invoiceFromDealer,
+                                       MultipartFile quotation,
+                                       MultipartFile existingLoanProof) throws IOException {
+
+        String uploadDir = "uploads/loanDetails/" + (details.getId() != null ? details.getId() : "temp");
+
+        if (saleAgreement != null && !saleAgreement.isEmpty()) {
+            String path = FileStorageUtil.saveFile(saleAgreement, uploadDir, "saleAgreement.pdf");
+            details.setSaleAgreementPath(path);
+        }
+
+        if (landProof != null && !landProof.isEmpty()) {
+            String path = FileStorageUtil.saveFile(landProof, uploadDir, "landProof.pdf");
+            details.setLandProofPath(path);
+        }
+
+        if (invoiceFromDealer != null && !invoiceFromDealer.isEmpty()) {
+            String path = FileStorageUtil.saveFile(invoiceFromDealer, uploadDir, "invoiceFromDealer.pdf");
+            details.setInvoiceFromDealerPath(path);
+        }
+
+        if (quotation != null && !quotation.isEmpty()) {
+            String path = FileStorageUtil.saveFile(quotation, uploadDir, "quotation.pdf");
+            details.setQuotationPath(path);
+        }
+
+        if (existingLoanProof != null && !existingLoanProof.isEmpty()) {
+            String path = FileStorageUtil.saveFile(existingLoanProof, uploadDir, "existingLoanProof.pdf");
+            details.setExistingLoanProofPath(path);
+        }
+
+        return repo.save(details);
+    }
+
+    @Override
+    public String getDocumentPath(Long id, String type) {
+        LoanDetails details = repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Loan details not found with ID: " + id));
+
+        return switch (type.toLowerCase()) {
+            case "sale_agreement" -> details.getSaleAgreementPath();
+            case "land_proof" -> details.getLandProofPath();
+            case "invoice" -> details.getInvoiceFromDealerPath();
+            case "quotation" -> details.getQuotationPath();
+            case "existing_loan" -> details.getExistingLoanProofPath();
+            default -> throw new RuntimeException("Invalid document type: " + type);
+        };
+    }
+}
+
+
+
+package com.customer.demo.services;
+
+import com.customer.demo.entities.LoanApplication;
+
+public interface MakerCheckerService {
+    LoanApplication makerAction(Long applicationId, boolean approve, String comments, Long makerId);
+    LoanApplication checkerAction(Long applicationId, boolean approve, String comments, Long checkerId);
+}
+
+
+
+package com.customer.demo.services;
+
+import com.customer.demo.entities.LoanApplication;
+import com.customer.demo.entities.enums.ApplicationStatus;
+import com.customer.demo.repositories.LoanApplicationRepository;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+
+@Service
+public class MakerCheckerServiceImpl implements MakerCheckerService {
+
+    private final LoanApplicationRepository repo;
+    private final NotificationService notificationService;
+
+    public MakerCheckerServiceImpl(LoanApplicationRepository repo,
+                                   NotificationService notificationService) {
+        this.repo = repo;
+        this.notificationService = notificationService;
+    }
+
+    @Override
+    public LoanApplication makerAction(Long applicationId, boolean approve, String comments, Long makerId) {
+        LoanApplication app = repo.findById(applicationId)
+                .orElseThrow(() -> new RuntimeException("Application not found"));
+
+        // Only pending apps should be handled by Maker
+        if (app.getStatus() != ApplicationStatus.PENDING_VERIFICATION) {
+            throw new IllegalStateException("Only PENDING_VERIFICATION applications can be handled by Maker");
+        }
+
+        app.setMakerComments(comments);
+        if (makerId != null) app.setMakerId(makerId);
+        app.setLastUpdatedDate(LocalDateTime.now());
+
+        if (approve) {
+            app.setStatus(ApplicationStatus.UNDER_VERIFICATION);
+            repo.save(app);
+            // Notify checker
+            notificationService.notifyChecker(app,
+                    "Application " + safeAppNo(app) + " verified by Maker and sent for review.");
+        } else {
+            app.setStatus(ApplicationStatus.REJECTED_BY_MAKER);
+            repo.save(app);
+            // Notify customer
+            notificationService.notifyCustomer(app,
+                    "Your application " + safeAppNo(app) + " was rejected by Maker. Comments: " + (comments == null ? "-" : comments));
+        }
+
+        return app;
+    }
+
+    @Override
+    public LoanApplication checkerAction(Long applicationId, boolean approve, String comments, Long checkerId) {
+        LoanApplication app = repo.findById(applicationId)
+                .orElseThrow(() -> new RuntimeException("Application not found"));
+
+        // Only verified-by-maker apps should be handled by Checker
+        if (app.getStatus() != ApplicationStatus.UNDER_VERIFICATION) {
+            throw new IllegalStateException("Only UNDER_VERIFICATION applications can be handled by Checker");
+        }
+
+        app.setCheckerComments(comments);
+        if (checkerId != null) app.setCheckerId(checkerId);
+        app.setLastUpdatedDate(LocalDateTime.now());
+
+        if (approve) {
+            app.setStatus(ApplicationStatus.APPROVED);
+            repo.save(app);
+            notificationService.notifyCustomer(app,
+                    "Congratulations! Your loan application " + safeAppNo(app) + " has been approved.");
+        } else {
+            app.setStatus(ApplicationStatus.REJECTED_BY_CHECKER);
+            repo.save(app);
+            notificationService.notifyCustomer(app,"Your loan application " + safeAppNo(app) + " was rejected by Checker. Comments: " + (comments == null ? "-" : comments));
+        }
+
+        return app;
+    }
+
+    private String safeAppNo(LoanApplication app) {
+        return app.getApplicationNumber() == null ? ("#" + app.getId()) : app.getApplicationNumber();
+    }
+}
+
+
+
+package com.customer.demo.services;
+
+import com.customer.demo.entities.LoanApplication;
+import com.customer.demo.entities.Notification;
+
+import java.util.List;
+
+public interface NotificationService {
+    Notification notifyCustomer(LoanApplication application, String message);
+    Notification notifyMaker(String message);
+    Notification notifyChecker(LoanApplication application, String message);
+    List<Notification> getNotificationsForRole(String role);
+    void markAsRead(Long id);
+}
+
+
+package com.customer.demo.services;
+
+import com.customer.demo.entities.LoanApplication;
+import com.customer.demo.entities.Notification;
+import com.customer.demo.repositories.NotificationRepository;
+import com.customer.demo.services.NotificationService;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class NotificationServiceImpl implements NotificationService {
+
+    private final NotificationRepository repo;
+
+    public NotificationServiceImpl(NotificationRepository repo) {
+        this.repo = repo;
+    }
+
+    @Override
+    public Notification notifyCustomer(LoanApplication application, String message) {
+        Notification n = new Notification();
+        n.setRecipientRole("CUSTOMER");
+        n.setMessage(message);
+        n.setLoanApplication(application);
+        return repo.save(n);
+    }
+
+    @Override
+    public Notification notifyMaker(String message) {
+        Notification n = new Notification();
+        n.setRecipientRole("MAKER");
+        n.setMessage(message);
+        return repo.save(n);
+    }
+
+    @Override
+    public Notification notifyChecker(LoanApplication application, String message) {
+        Notification n = new Notification();
+        n.setRecipientRole("CHECKER");
+        n.setMessage(message);
+        n.setLoanApplication(application);
+        return repo.save(n);
+    }
+
+    @Override
+    public List<Notification> getNotificationsForRole(String role) {
+        return repo.findByRecipientRoleOrderByTimestampDesc(role);
+    }
+
+    @Override
+    public void markAsRead(Long id) {
+        Notification n = repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Notification not found"));
+        n.setReadStatus(true);
+        repo.save(n);
+    }
+}
+
+
+package com.customer.demo.services;
+
+import com.customer.demo.entities.Reference;
+import java.util.List;
+
+public interface ReferenceService {
+    Reference saveReference(Reference reference);
+    List<Reference> getReferencesByApplicationId(Long loanApplicationId);
+}
+
+package com.customer.demo.services;
+
+import com.customer.demo.entities.Reference;
+import com.customer.demo.repositories.ReferenceRepository;
+import com.customer.demo.services.ReferenceService;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class ReferenceServiceImpl implements ReferenceService {
+
+    private final ReferenceRepository repo;
+
+    public ReferenceServiceImpl(ReferenceRepository repo) {
+        this.repo = repo;
+    }
+
+    @Override
+    public Reference saveReference(Reference reference) {
+        return repo.save(reference);
+    }
+
+    @Override
+    public List<Reference> getReferencesByApplicationId(Long loanApplicationId) {
+        return repo.findByLoanApplicationId(loanApplicationId);
+    }
+}
+
+
+
+package com.customer.demo.services;
+
+import com.customer.demo.dto.SignupRequest;
+import com.customer.demo.dto.LoginRequest;
+import com.customer.demo.dto.ForgotPasswordRequest;
+import com.customer.demo.dto.LoginResponse;
+import com.customer.demo.entities.Customer;
+import com.customer.demo.entities.User;
+import com.customer.demo.entities.enums.Role;
+import com.customer.demo.repositories.UserRepository;
+import com.customer.demo.repositories.CustomerRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
+import java.util.UUID;
+
+@Service
+public class UserService {
+
+    private final UserRepository userRepository;
+    private final CustomerRepository customerRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    public UserService(UserRepository userRepository,
+                       CustomerRepository customerRepository,
+                       PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.customerRepository = customerRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    // 🟢 1️⃣ REGISTER NEW CUSTOMER
+    @Transactional
+    public String registerCustomer(SignupRequest request) {
+        // ✅ Email uniqueness check
+        if (userRepository.findByUsername(request.getEmail()).isPresent()) {
+            throw new RuntimeException("❌ Email is already registered. Please log in instead.");
+        }
+
+        // ✅ Password confirmation check
+        if (!request.getPassword().equals(request.getConfirmPassword())) {
+            throw new RuntimeException("❌ Passwords do not match!");
+        }
+
+        // ✅ Create User entity
+        User user = new User();
+        user.setUsername(request.getEmail()); // Using email as username
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(Role.CUSTOMER);
+        user.setActive(true);
+
+        // ✅ Create linked Customer entity
+        Customer customer = new Customer();
+        customer.setFirstName(request.getFirstName());
+        customer.setMiddleName(request.getMiddleName());
+        customer.setLastName(request.getLastName());
+        customer.setEmail(request.getEmail());
+        customer.setPhone(request.getPhone());
+
+        // ✅ Link both sides (bidirectional one-to-one)
+        user.setCustomer(customer);
+        customer.setUser(user);
+
+        // ✅ Save user (cascade saves customer automatically)
+        userRepository.save(user);
+
+        return "✅ Customer registered successfully!";
+    }
+
+    // 🟢 2️⃣ LOGIN (Customer / Maker / Checker)
+    public LoginResponse loginUser(LoginRequest request) {
+        Optional<User> optionalUser = userRepository.findByUsername(request.getUsername());
+        if (optionalUser.isEmpty()) {
+            throw new RuntimeException("❌ No user found with username: " + request.getUsername());
+        }
+
+        User user = optionalUser.get();
+
+        if (!user.isActive()) {
+            throw new RuntimeException("⚠️ Account is inactive. Please contact support.");
+        }
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new RuntimeException("❌ Invalid password. Please try again.");
+        }
+
+        return new LoginResponse(
+                user.getUsername(),
+                user.getRole().name(),
+                "✅ Login successful!"
+        );
+    }
+
+    // 🟢 3️⃣ FORGOT PASSWORD (Generate Reset Token)
+    public String initiatePasswordReset(String email) {
+        Optional<User> userOpt = userRepository.findByUsername(email);
+        if (userOpt.isEmpty()) {
+            throw new RuntimeException("❌ No account found with this email address.");
+        }
+
+        User user = userOpt.get();
+        String token = UUID.randomUUID().toString();
+        user.setResetToken(token);
+        userRepository.save(user);
+
+        // (In production, you’d send this token via email)
+        return "🔐 Password reset token generated successfully. Use this token to reset your password: " + token;
+    }
+
+    // 🟢 4️⃣ RESET PASSWORD (Using Token)
+    public String resetPassword(ForgotPasswordRequest req) {
+        Optional<User> userOpt = userRepository.findByResetToken(req.getToken());
+        if (userOpt.isEmpty()) {
+            throw new RuntimeException("❌ Invalid or expired reset token.");
+        }
+
+        User user = userOpt.get();
+        user.setPassword(passwordEncoder.encode(req.getNewPassword()));
+        user.setResetToken(null);
+        userRepository.save(user);
+
+        return "✅ Password has been successfully updated.";
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
